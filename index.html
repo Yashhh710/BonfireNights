@@ -542,19 +542,44 @@
             return '20s';
         }
 
-        discoverForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const q = discoverInput.value.trim();
-            if (!q) return;
-            discoverResults.innerHTML = '';
+        // Live "as-you-type" search — debounced, with a request token so a slow
+        // stale response can never overwrite a newer one.
+        let discoverSearchToken = 0;
+        let discoverDebounceTimer = null;
+
+        async function runDiscoverSearch(rawQuery) {
+            const q = rawQuery.trim();
+            const myToken = ++discoverSearchToken;
+
+            if (!q) {
+                discoverResults.innerHTML = '';
+                discoverStatus.classList.add('hidden');
+                return;
+            }
+            if (q.length < 2) {
+                // too short to search yet — just wait for more characters
+                discoverStatus.classList.remove('hidden');
+                discoverStatus.textContent = 'Keep typing…';
+                discoverResults.innerHTML = '';
+                return;
+            }
+
             discoverStatus.classList.remove('hidden');
             discoverStatus.textContent = 'Searching…';
+
             try {
                 const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q + ' hindi')}&media=music&country=IN&limit=15`;
                 const res = await fetch(url);
                 const data = await res.json();
+
+                // A newer keystroke already started a fresher search — drop this result.
+                if (myToken !== discoverSearchToken) return;
+
                 const tracks = (data.results || []).filter(t => t.previewUrl);
+                discoverResults.innerHTML = '';
+
                 if (tracks.length === 0) {
+                    discoverStatus.classList.remove('hidden');
                     discoverStatus.textContent = 'No previews found. Try another spelling / singer / movie name.';
                     return;
                 }
@@ -584,9 +609,24 @@
                     discoverResults.appendChild(li);
                 });
             } catch (err) {
+                if (myToken !== discoverSearchToken) return;
                 discoverStatus.classList.remove('hidden');
                 discoverStatus.textContent = 'Search failed — check your connection and try again.';
             }
+        }
+
+        // Type "kish" → results for Kishore Kumar start appearing automatically,
+        // no need to press Go. Debounced so it doesn't fire a request per keystroke.
+        discoverInput.addEventListener('input', () => {
+            clearTimeout(discoverDebounceTimer);
+            const value = discoverInput.value;
+            discoverDebounceTimer = setTimeout(() => runDiscoverSearch(value), 350);
+        });
+
+        discoverForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            clearTimeout(discoverDebounceTimer);
+            runDiscoverSearch(discoverInput.value);
         });
 
         function escapeHtml(str) {
