@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/?size=100&id=LTLZTUNlFQPy&format=png&color=000000">
     <title>Bonfire Radio - बोनफायर नाइट्स</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,17 +19,14 @@
         .ui-font {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
-        /* Subtle paper grain texture overlay */
         .paper-grain {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         }
-        /* Vintage screen-printed text shadow */
         .retro-shadow {
             text-shadow: 3px 3px 0px rgba(15, 10, 5, 0.85), 
                          1px 1px 0px rgba(0, 0, 0, 0.9);
         }
         
-        /* Animations */
         @keyframes slideUpFade1 {
             0% { opacity: 0; transform: translateY(30px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -71,7 +69,6 @@
             animation-play-state: paused;
         }
 
-        /* macOS-style Frosted Glass */
         .mac-glass {
             background-color: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px) saturate(180%);
@@ -83,16 +80,12 @@
 </head>
 <body class="m-0 p-0 bg-neutral-950 text-neutral-100 overflow-hidden select-none ui-font h-screen">
 
-    <!-- Hero Section with Background Image -->
     <div class="h-full w-full bg-[url('models/main.png')] bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-start pt-12 md:pt-16 px-4">
         
-        <!-- Subtle dark translucent gradient overlay for text readability -->
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70 pointer-events-none"></div>
 
-        <!-- Paper Grain Texture Layer -->
         <div class="absolute inset-0 paper-grain pointer-events-none mix-blend-overlay opacity-50"></div>
 
-        <!-- TOP LEFT: Search Song Button -->
         <div class="absolute top-6 left-6 z-40 flex items-center gap-3">
             <button id="searchSongBtn" class="mac-glass px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Add local Hindi mp3s and tag their decade">
                 <svg class="w-4 h-4 text-white/80 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,15 +107,12 @@
             </button>
         </div>
 
-        <!-- Discover / Instant Preview Panel -->
         <div id="discoverPanel" class="hidden absolute top-24 left-6 z-40 mac-glass rounded-2xl w-[320px] p-3 flex-col" style="max-height:70vh;">
-            <!-- Header -->
             <div class="flex items-center justify-between mb-2 px-1 flex-shrink-0">
                 <h3 class="text-xs font-bold text-white/90 tracking-wide uppercase">Search &amp; Play</h3>
                 <button id="closeDiscoverPanel" class="text-white/60 hover:text-white text-sm leading-none">✕</button>
             </div>
 
-            <!-- Search input -->
             <div class="px-1 mb-2 flex-shrink-0" id="discoverSearchWrap">
                 <div class="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2 focus-within:border-white/50 transition-colors">
                     <svg class="w-3.5 h-3.5 text-white/50 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,17 +125,13 @@
                 </div>
             </div>
 
-            <!-- Suggestions list (shown while typing, replaces results) -->
             <ul id="discoverSuggestions" class="hidden flex-col gap-0.5 overflow-y-auto px-1 flex-shrink-0" style="max-height:260px;"></ul>
 
-            <!-- Status / spinner -->
             <div id="discoverStatus" class="hidden flex-shrink-0 text-white/50 text-xs text-center py-2 px-1"></div>
 
-            <!-- Results list (shown after suggestion selected or debounce fires) -->
             <ul id="discoverResults" class="flex flex-col gap-0.5 overflow-y-auto flex-1 px-1"></ul>
         </div>
 
-        <!-- Decade Filter Bar -->
         <div id="decadeFilterBar" class="absolute top-6 right-6 z-40 flex flex-wrap gap-2 justify-end max-w-[260px] md:max-w-none">
             <button data-decade="all" class="decade-chip active-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/90 hover:bg-white/20 active:scale-95 transition-all">All</button>
             <button data-decade="50s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">50's</button>
@@ -156,7 +142,6 @@
             <button data-decade="20s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">2020's</button>
         </div>
 
-        <!-- Playlist Panel (toggles open) -->
         <div id="playlistPanel" class="hidden absolute top-24 right-6 z-40 mac-glass rounded-2xl w-[280px] max-h-[55vh] overflow-y-auto p-3">
             <div class="flex items-center justify-between mb-2 px-1">
                 <h3 id="playlistPanelTitle" class="text-xs font-bold text-white/90 tracking-wide uppercase">Playlist</h3>
@@ -166,7 +151,6 @@
             <p id="playlistEmptyMsg" class="text-white/50 text-xs text-center py-4 hidden">No songs yet.</p>
         </div>
 
-        <!-- Tag Decade Modal (shown after picking files) -->
         <div id="tagModalOverlay" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
             <div class="mac-glass rounded-2xl p-5 w-full max-w-sm">
                 <h3 class="text-sm font-bold text-white mb-1">Tag these songs</h3>
@@ -186,70 +170,54 @@
             </div>
         </div>
 
-        <!-- Hero Title & Subtitle Container -->
         <div class="relative z-10 text-center flex flex-col items-center max-w-4xl mx-auto">
-            
-            <!-- Line 1: बोनफायर -->
+        
             <h1 class="vintage-font text-6xl sm:text-8xl md:text-[145px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-1 leading-none mb-[-25px] md:mb-[-45px]">
                 बोनफायर
             </h1>
-
-            <!-- Line 2: नाइट्स -->
             <h1 class="vintage-font text-6xl sm:text-8xl md:text-[145px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-2 leading-none mb-3 md:mb-5">
                 नाइट्स
             </h1>
-
-            <!-- Subtitle: — 50’s TO 20’s — -->
             <div class="subtitle-font text-sm sm:text-base md:text-xl tracking-[0.2em] text-[#EAD8B1] opacity-95 animate-subtitle font-bold uppercase drop-shadow-lg">
                 — 50’s TO 20’s —
             </div>
 
         </div>
 
-        <!-- Music Player Container (Positioned absolutely, centered) -->
         <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 opacity-0 animate-player flex items-center gap-3 w-auto">
-            
-            <!-- Player Pill Wrapper -->
+
             <div class="w-[95vw] sm:w-[520px] md:w-[580px] h-[88px]">
 
-            <!-- Hidden Audio Element -->
             <audio id="audioElement"></audio>
 
-            <!-- Mac-style Glass Pill -->
             <div class="mac-glass rounded-3xl h-full px-5 flex items-center justify-between gap-4 text-neutral-100 relative overflow-hidden">
-                
-                <!-- Background color tint (subtle warmth over glass) -->
+             
                 <div class="absolute inset-0 bg-[#b34721] mix-blend-multiply opacity-10 pointer-events-none"></div>
                 <div class="absolute inset-0 paper-grain opacity-30 pointer-events-none"></div>
 
-                <!-- LEFT: Album Artwork -->
                 <div class="relative flex-shrink-0 cursor-pointer group shadow-lg rounded-full" id="uploadTrigger" title="Click to add local music files">
                     <div class="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-white/20 transition-transform group-hover:scale-105">
                         <img id="albumArt" src="models/main.png" alt="Artwork" class="w-full h-full object-cover rotating-art paused-art" />
                     </div>
-                    <!-- Upload overlay badge -->
                     <div class="absolute inset-0 bg-black/60 rounded-full flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                         <svg class="w-5 h-5 text-white/80 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         <span class="text-[9px] text-white font-medium">MUSIC</span>
                     </div>
                 </div>
 
-                <!-- Hidden File Input -->
                 <input type="file" id="audioFileInput" accept="audio/*" multiple class="hidden">
 
-                <!-- CENTER: Info & Progress -->
                 <div class="flex-grow min-w-0 flex flex-col justify-center gap-2 py-1">
                     <div class="truncate text-center">
                         <h2 id="songTitle" class="text-sm md:text-base font-semibold text-white truncate drop-shadow-sm">Waiting for input...</h2>
                         <p id="artistName" class="text-xs text-white/70 font-medium truncate">Add music to start</p>
                     </div>
 
-                    <!-- Progress Bar Area -->
                     <div class="flex items-center gap-2 w-full">
                         <span id="currentTime" class="text-[11px] font-mono text-white/60 w-10 text-right">00:00</span>
-                        <!-- Progress Bar Track -->
+                      
                         <div class="flex-grow bg-white/20 h-1.5 rounded-full overflow-hidden cursor-pointer group relative" id="progressBarContainer">
-                            <!-- Bar Buffer/Progress -->
+                        
                             <div id="progressBar" class="bg-white h-full w-0 rounded-full relative transition-all duration-150 ease-linear shadow-md">
                                 <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"></div>
                             </div>
@@ -258,28 +226,23 @@
                     </div>
                 </div>
 
-                <!-- RIGHT: Controls -->
                 <div class="flex items-center gap-1 md:gap-2 flex-shrink-0">
 
-                    <!-- Like Button -->
                     <button id="likeBtn" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 text-white/70 transition-all active:scale-95 disabled:opacity-40" title="Like this song" disabled>
                         <svg id="likeIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21s-6.716-4.35-9.428-8.06C.86 10.42 1.2 6.9 3.9 5.2c2.3-1.44 5.02-.8 6.6 1.16.5.62.9 1.3 1.5 1.94.6-.64 1-1.32 1.5-1.94 1.58-1.96 4.3-2.6 6.6-1.16 2.7 1.7 3.04 5.22 1.33 7.74C18.72 16.65 12 21 12 21z"/>
                         </svg>
                     </button>
 
-                    <!-- Previous Button -->
                     <button id="prevBtn" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 text-white/70 transition-all active:scale-95 disabled:opacity-40" title="Previous Song">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                     </button>
 
-                    <!-- Play / Pause Button -->
                     <button id="playPauseBtn" class="w-14 h-14 rounded-full bg-white text-[#b34721] flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all disabled:opacity-60" title="Play / Pause">
                         <svg id="playIcon" class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M9.5 5.5v13l10-6.5z"/></svg>
                         <svg id="pauseIcon" class="w-5 h-5 fill-current hidden" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
                     </button>
 
-                    <!-- Next Button -->
                     <button id="nextBtn" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 text-white/70 transition-all active:scale-95 disabled:opacity-40" title="Next Song">
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
@@ -287,15 +250,14 @@
                 </div>
 
             </div>
-            </div><!-- end Player Pill Wrapper -->
+            </div>
 
-            <!-- Separate Disc / Playlist Box -->
             <button id="playerPlaylistBtn" class="mac-glass flex-shrink-0 h-[88px] w-[88px] rounded-3xl flex items-center justify-center text-white/80 hover:bg-white/20 active:scale-95 transition-all shadow-lg" title="Open Playlist">
-                <!-- Rolling Dice Icon -->
+                
                 <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <!-- Die face (rounded square) -->
+                 
                     <rect x="3" y="3" width="18" height="18" rx="3" ry="3"/>
-                    <!-- Dots: 5-face pattern -->
+                  
                     <circle cx="8"  cy="8"  r="1.1" fill="currentColor" stroke="none"/>
                     <circle cx="16" cy="8"  r="1.1" fill="currentColor" stroke="none"/>
                     <circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/>
@@ -308,7 +270,6 @@
 
     </div>
 
-    <!-- JavaScript for Player Functionality -->
     <script>
         const audioElement = document.getElementById('audioElement');
         audioElement.preload = 'auto';
@@ -351,16 +312,16 @@
 
         const DECADE_LABELS = { '50s': "50's", '60s': "60's", '70s': "70's", '80s': "80's", '90s': "90's", '20s': "2020's" };
 
-        // Full library of added songs: { id, name, artist, title, decade, file (File obj, session-only), liked }
+ 
         let library = [];
-        let filteredView = []; // indices into `library` currently playable given active filter
-        let currentLibIndex = null; // index into library of currently loaded song
+        let filteredView = []; 
+        let currentLibIndex = null; 
         let isPlaying = false;
         let activeDecadeFilter = 'all';
         let pendingFiles = [];
 
-        const LIKES_KEY = 'bonfireRadioLikedSongIds';         // local-file songs: just ids (need re-add to replay)
-        const LIKED_PREVIEWS_KEY = 'bonfireRadioLikedPreviews'; // preview songs: full metadata, replayable forever
+        const LIKES_KEY = 'bonfireRadioLikedSongIds';    
+        const LIKED_PREVIEWS_KEY = 'bonfireRadioLikedPreviews'; 
 
         function loadLikedIds() {
             try { return new Set(JSON.parse(localStorage.getItem(LIKES_KEY)) || []); }
@@ -378,7 +339,7 @@
         function saveLikedPreviews(arr) {
             localStorage.setItem(LIKED_PREVIEWS_KEY, JSON.stringify(arr));
         }
-        let likedPreviews = loadLikedPreviews(); // array of preview song objects
+        let likedPreviews = loadLikedPreviews(); 
 
         function songId(name, decade) {
             return decade + '::' + name;
@@ -397,7 +358,6 @@
         }
         setInitialState();
 
-        // ---- Adding songs ----
         uploadTrigger.addEventListener('click', () => audioFileInput.click());
         searchSongBtn.addEventListener('click', () => audioFileInput.click());
 
@@ -435,14 +395,12 @@
             pendingFiles = [];
             tagModalOverlay.classList.add('hidden');
             applyFilter(activeDecadeFilter);
-            // if nothing was playing yet, start the first newly added track
             if (currentLibIndex === null && library.length > startIndex) {
                 playFromLibrary(startIndex);
             }
             renderPlaylistPanel();
         });
 
-        // ---- Decade filter chips ----
         decadeChips.forEach(chip => {
             chip.addEventListener('click', () => {
                 activeDecadeFilter = chip.dataset.decade;
@@ -469,14 +427,12 @@
         }
         applyFilter('all');
 
-        // ---- Playlist panel ----
         myLikesBtn.addEventListener('click', () => {
             showLikesPanel();
         });
         closePlaylistPanel.addEventListener('click', () => playlistPanel.classList.add('hidden'));
 
-        // ---- Dice button: play a random song from songs.json respecting active decade filter ----
-        let songsDb = null; // cached songs.json data
+        let songsDb = null; 
 
         async function loadSongsDb() {
             if (songsDb) return songsDb;
@@ -493,13 +449,8 @@
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
-        // Shared logic: fetch a random song from songs.json and play it.
-        // Also called by next/prev buttons when in dice/preview mode.
-        // Shared logic: fetch a random song from songs.json and play it.
-        // Also called by next/prev buttons when in dice/preview mode.
-        let diceHistory = [];      // history of dice-played songs
-        let diceHistoryPos = -1;   // current position in history
-
+        let diceHistory = [];     
+        let diceHistoryPos = -1;  
         async function playRandomDiceSong() {
             playerPlaylistBtn.classList.add('animate-spin');
             playerPlaylistBtn.disabled = true;
@@ -510,7 +461,6 @@
                 const db = await loadSongsDb();
                 if (!db) throw new Error('Could not load songs.json');
 
-                // Gather query pool based on active decade filter
                 let pool = [];
                 if (activeDecadeFilter === 'all') {
                     Object.values(db).forEach(arr => pool.push(...arr));
@@ -519,7 +469,6 @@
                 }
                 if (pool.length === 0) throw new Error('No songs for this decade');
 
-                // Try up to 4 random queries until we get a track with a preview
                 let song = null;
                 for (let attempt = 0; attempt < 4; attempt++) {
                     const entry = pickRandom(pool);
@@ -545,7 +494,6 @@
 
                 if (!song) throw new Error('No preview found — try again');
 
-                // Push to history, discarding any forward entries beyond current pos
                 diceHistory = diceHistory.slice(0, diceHistoryPos + 1);
                 diceHistory.push(song);
                 diceHistoryPos = diceHistory.length - 1;
@@ -619,7 +567,6 @@
                 return;
             }
 
-            // browse mode (decade filter of local library)
             const indices = filteredView;
             if (indices.length === 0) {
                 playlistEmptyMsg.classList.remove('hidden');
@@ -650,7 +597,6 @@
             });
         }
 
-        // ---- Discover: real-time suggestions + search ----
         const discoverClear      = document.getElementById('discoverClear');
         const discoverSuggestions = document.getElementById('discoverSuggestions');
 
@@ -683,7 +629,6 @@
             return '20s';
         }
 
-        // Highlight the matched part of a string
         function highlightMatch(text, query) {
             if (!query) return escapeHtml(text);
             const idx = text.toLowerCase().indexOf(query.toLowerCase());
@@ -693,10 +638,9 @@
                 + escapeHtml(text.slice(idx + query.length));
         }
 
-        // --- Suggestion token (separate from full-search token) ---
         let suggestToken = 0;
         let suggestTimer = null;
-        let suggestionItems = []; // flat list for keyboard nav
+        let suggestionItems = [];
         let suggestionFocus = -1;
 
         function hideSuggestions() {
@@ -758,7 +702,6 @@
                     suggestionItems.push(li);
                 });
 
-                // Hide results & status, show suggestions inline instead
                 discoverResults.style.display = 'none';
                 discoverStatus.style.display = 'none';
                 discoverSuggestions.classList.remove('hidden');
@@ -767,7 +710,6 @@
             } catch (_) { hideSuggestions(); }
         }
 
-        // Keyboard navigation inside suggestions
         discoverInput.addEventListener('keydown', (e) => {
             if (discoverSuggestions.classList.contains('hidden')) return;
             if (e.key === 'ArrowDown') {
@@ -793,12 +735,10 @@
             if (suggestionFocus >= 0) suggestionItems[suggestionFocus].scrollIntoView({ block: 'nearest' });
         }
 
-        // Hide suggestions when clicking outside
         document.addEventListener('click', (e) => {
             if (!discoverPanel.contains(e.target)) hideSuggestions();
         });
 
-        // Clear button
         discoverClear.addEventListener('click', () => {
             discoverInput.value = '';
             discoverClear.classList.add('hidden');
@@ -808,7 +748,6 @@
             discoverInput.focus();
         });
 
-        // --- Full search token ---
         let discoverSearchToken = 0;
         let discoverDebounceTimer = null;
         let suggestDebounceTimer = null;
@@ -817,11 +756,9 @@
             const val = discoverInput.value;
             discoverClear.classList.toggle('hidden', !val);
 
-            // Suggestions: fast (200ms)
             clearTimeout(suggestTimer);
             suggestTimer = setTimeout(() => fetchSuggestions(val.trim()), 200);
 
-            // Full results: slower (450ms)
             clearTimeout(discoverDebounceTimer);
             discoverDebounceTimer = setTimeout(() => runDiscoverSearch(val), 450);
         });
@@ -875,7 +812,6 @@
                 });
                 currentPreviewList = songList;
 
-                // If a suggestion was clicked, auto-play that song immediately
                 if (autoplaySong) {
                     const idx = songList.findIndex(s => s.id === autoplaySong.id);
                     playPreviewSong(autoplaySong, idx >= 0 ? idx : 0);
@@ -900,7 +836,7 @@
                         <span class="text-[9px] font-medium text-white/40 bg-white/10 rounded px-1.5 py-0.5 flex-shrink-0">30s</span>
                     `;
                     li.addEventListener('click', () => {
-                        // Highlight active row
+                      
                         discoverResults.querySelectorAll('li').forEach(el => el.classList.remove('bg-white/20'));
                         li.classList.add('bg-white/20');
                         playPreviewSong(song, idx);
@@ -921,11 +857,7 @@
             return div.innerHTML;
         }
 
-        // ---- Core playback ----
-        // currentSong holds whichever song object (local-file OR preview) is loaded right now
         let currentSong = null;
-        // Tracks the current preview search-results list so we can auto-advance
-        // to the next preview once one finishes playing.
         let currentPreviewList = [];
         let currentPreviewIndex = -1;
 
@@ -945,15 +877,12 @@
         }
 
         function playPreviewSong(song, listIndex) {
-            // song: { id, title, artist, decade, artwork, previewUrl }
             currentLibIndex = null;
             currentSong = song;
             currentPreviewIndex = (typeof listIndex === 'number') ? listIndex : currentPreviewList.indexOf(song);
             loadSong(song, song.previewUrl, true);
             playSong();
             playPauseBtn.disabled = false;
-            // In dice mode (single-song preview list) prev/next rolls a new random song,
-            // so always enable them. Only disable if there's truly no list at all.
             prevBtn.disabled = false;
             nextBtn.disabled = false;
             likeBtn.disabled = false;
@@ -1000,7 +929,7 @@
         }
 
         nextBtn.addEventListener('click', () => {
-            // Local library mode
+           
             if (currentLibIndex !== null) {
                 const pool = filteredView.length ? filteredView : library.map((_, i) => i);
                 if (pool.length <= 1) { if (pool.length === 1) playFromLibrary(pool[0]); return; }
@@ -1009,13 +938,11 @@
                 playFromLibrary(pool[pos]);
                 return;
             }
-            // Multi-track Discover list
             if (currentPreviewList.length > 1) {
                 const pos = (currentPreviewIndex + 1) % currentPreviewList.length;
                 playPreviewSong(currentPreviewList[pos], pos);
                 return;
             }
-            // Dice mode: if there's a forward entry in history, play it; else fetch new
             if (diceHistoryPos < diceHistory.length - 1) {
                 diceHistoryPos++;
                 const song = diceHistory[diceHistoryPos];
@@ -1027,7 +954,6 @@
         });
 
         prevBtn.addEventListener('click', () => {
-            // Local library mode
             if (currentLibIndex !== null) {
                 const pool = filteredView.length ? filteredView : library.map((_, i) => i);
                 if (pool.length <= 1) { if (pool.length === 1) playFromLibrary(pool[0]); return; }
@@ -1036,27 +962,22 @@
                 playFromLibrary(pool[pos]);
                 return;
             }
-            // Multi-track Discover list
             if (currentPreviewList.length > 1) {
                 const pos = (currentPreviewIndex - 1 + currentPreviewList.length) % currentPreviewList.length;
                 playPreviewSong(currentPreviewList[pos], pos);
                 return;
             }
-            // Dice mode: walk back through history
             if (diceHistoryPos > 0) {
                 diceHistoryPos--;
                 const song = diceHistory[diceHistoryPos];
                 currentPreviewList = [song];
                 playPreviewSong(song, 0);
             }
-            // If at the start of history, do nothing (already at first song)
         });
 
-        // ---- Like button ----
         likeBtn.addEventListener('click', () => {
             if (!currentSong) return;
             if (currentSong.previewUrl) {
-                // preview-type song: toggle in likedPreviews (full metadata, persists)
                 const idx = likedPreviews.findIndex(s => s.id === currentSong.id);
                 if (idx >= 0) {
                     likedPreviews.splice(idx, 1);
@@ -1091,7 +1012,6 @@
             }
         }
 
-        // ---- Progress bar / full playback ----
         audioElement.addEventListener('timeupdate', () => {
             if (audioElement.duration) {
                 const current = audioElement.currentTime;
@@ -1107,22 +1027,17 @@
             durationEl.textContent = formatTime(audioElement.duration || 0);
         });
 
-        // When a song ends, auto-play the next one
         audioElement.addEventListener('ended', () => {
             if (currentLibIndex !== null) {
-                // Local library — go to next song in filtered view
                 nextBtn.click();
             } else if (currentPreviewList.length > 1) {
-                // Multi-track Discover list — advance to next track
                 const nextIndex = currentPreviewIndex + 1;
                 if (nextIndex < currentPreviewList.length) {
                     playPreviewSong(currentPreviewList[nextIndex], nextIndex);
                 } else {
-                    // End of discover list — roll a new random dice song
                     playRandomDiceSong();
                 }
             } else {
-                // Dice / single preview — auto-roll next random song
                 playRandomDiceSong();
             }
         });
@@ -1146,17 +1061,16 @@
     <style>
         .active-chip { background: rgba(255,255,255,0.28) !important; }
 
-        /* Hide scrollbars everywhere in the panel */
         #discoverPanel, #discoverResults, #discoverSuggestions, #playlistPanel, #playlistList {
-            scrollbar-width: none;        /* Firefox */
-            -ms-overflow-style: none;     /* IE/Edge */
+            scrollbar-width: none;     
+            -ms-overflow-style: none;    
         }
         #discoverPanel::-webkit-scrollbar,
         #discoverResults::-webkit-scrollbar,
         #discoverSuggestions::-webkit-scrollbar,
         #playlistPanel::-webkit-scrollbar,
         #playlistList::-webkit-scrollbar {
-            display: none;                /* Chrome/Safari/Opera */
+            display: none;              
         }
     </style>
 </body>
