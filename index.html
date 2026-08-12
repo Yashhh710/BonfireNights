@@ -9,10 +9,10 @@
     <!-- Google Fonts for Vintage Indian Poster Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rozha+One&family=Special+Elite&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Yatra+One&family=Rozha+One&family=Special+Elite&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         .vintage-font {
-            font-family: 'Rozha One', serif;
+            font-family: 'Yatra One', 'Rozha One', serif;
         }
         .subtitle-font {
             font-family: 'Special Elite', monospace, serif;
@@ -24,12 +24,58 @@
         .paper-grain {
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         }
-        /* Vintage screen-printed text shadow */
+        /* Vintage screen-printed text shadow matching the poster image */
         .retro-shadow {
-            text-shadow: 3px 3px 0px rgba(15, 10, 5, 0.85), 
-                         1px 1px 0px rgba(0, 0, 0, 0.9);
+            text-shadow: 4px 4px 0px rgba(18, 10, 5, 0.95), 
+                         2px 2px 0px rgba(0, 0, 0, 1);
         }
         
+        /* Continuous Top Line Bar (Shirorekha Extension) like in the original poster */
+        .title-line {
+            position: relative;
+            display: inline-block;
+            padding: 0 0.1em;
+        }
+        .title-line::before {
+            content: '';
+            position: absolute;
+            top: 14%;
+            left: -5%;
+            right: -5%;
+            height: 3px;
+            background-color: #FDF6E2;
+            box-shadow: 2px 2px 0px rgba(18, 10, 5, 0.95);
+            pointer-events: none;
+        }
+
+        /* Banner Decorative Side Dashes for 50'S TO 20'S */
+        .banner-dashes {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .banner-dashes::before,
+        .banner-dashes::after {
+            content: "";
+            display: inline-block;
+            width: 45px;
+            height: 3px;
+            background-color: #FDF6E2;
+            border-radius: 2px;
+            box-shadow: 2px 2px 0px rgba(18, 10, 5, 0.95);
+        }
+
+        @media (max-width: 640px) {
+            .banner-dashes {
+                gap: 10px;
+            }
+            .banner-dashes::before,
+            .banner-dashes::after {
+                width: 22px;
+                height: 2px;
+            }
+        }
+
         /* Animations */
         @keyframes slideUpFade1 {
             0% { opacity: 0; transform: translateY(30px); }
@@ -81,12 +127,18 @@
             border: 1px solid rgba(255, 255, 255, 0.18);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+
+        /* Smooth dropdown transition utilities */
+        #suggestionsBox {
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform-origin: top;
+        }
     </style>
 </head>
 <body class="m-0 p-0 bg-neutral-950 text-neutral-100 overflow-hidden select-none ui-font h-screen">
 
     <!-- Hero Section with Background Image -->
-    <div class="h-full w-full bg-[url('models/main.png')] bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-start pt-12 md:pt-16 px-4">
+    <div class="h-full w-full bg-[url('models/main.png')] bg-cover bg-center bg-no-repeat relative flex flex-col items-center justify-start pt-28 sm:pt-24 md:pt-16 lg:pt-12 px-4 overflow-y-auto overflow-x-hidden">
         
         <!-- Subtle dark translucent gradient overlay for text readability -->
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/70 pointer-events-none"></div>
@@ -94,56 +146,47 @@
         <!-- Paper Grain Texture Layer -->
         <div class="absolute inset-0 paper-grain pointer-events-none mix-blend-overlay opacity-50"></div>
 
-        <!-- TOP LEFT: Search Song Button -->
-        <div class="absolute top-6 left-6 z-40 flex items-center gap-3">
-            <button id="searchSongBtn" class="mac-glass px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Add local Hindi mp3s and tag their decade">
-                <svg class="w-4 h-4 text-white/80 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        <!-- TOP LEFT: Search Song Bar with Autocomplete Suggestions Dropdown -->
+        <div class="absolute top-6 left-6 z-40">
+            <div class="relative">
+                <form id="playForm" class="mac-glass rounded-full flex items-center gap-2 px-3.5 py-2 shadow-lg">
+                    <svg class="w-4 h-4 text-white/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input id="playInput" type="text" autocomplete="off" placeholder="Type a song / singer and hit play…" class="bg-transparent outline-none text-xs md:text-sm text-white placeholder-white/40 w-44 sm:w-64" />
+                    <button type="submit" class="bg-white text-[#b34721] font-semibold text-xs rounded-full px-3 py-1 hover:opacity-90 active:scale-95 transition-all flex-shrink-0">Play</button>
+                </form>
+
+                <!-- Mac-Style Glass Suggestions Dropdown with Close Button -->
+                <div id="suggestionsBox" class="hidden opacity-0 scale-95 absolute left-0 right-0 mt-2 mac-glass rounded-2xl overflow-hidden shadow-2xl z-50 max-h-64 overflow-y-auto transition-all duration-200">
+                    <div class="flex items-center justify-between px-3.5 py-2 border-b border-white/10 bg-white/5 sticky top-0 backdrop-blur-md z-10">
+                        <span class="text-[11px] font-bold text-white/80 tracking-wider uppercase">Suggestions</span>
+                        <button id="closeSuggestionsBtn" type="button" class="text-white/60 hover:text-white text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">✕</button>
+                    </div>
+                    <div id="suggestionsList" class="flex flex-col py-1"></div>
+                </div>
+            </div>
+        </div>
+        <div id="playStatus" class="hidden absolute top-[68px] left-6 z-40 text-[11px] text-white/60 mac-glass px-3 py-1.5 rounded-full"></div>
+
+        <!-- TOP RIGHT: Add Songs & My Likes Buttons -->
+        <div class="absolute top-6 right-6 z-40 flex items-center gap-3">
+            <button id="searchSongBtn" class="mac-glass px-4 py-2.5 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Add local Hindi mp3s and tag their decade">
+                <svg class="w-4 h-4 text-white/80 group-hover:text-white transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
                 </svg>
                 <span class="font-medium tracking-wide">Add Songs</span>
             </button>
-            <button id="myLikesBtn" class="mac-glass px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Show my liked songs">
+            <button id="myLikesBtn" class="mac-glass px-4 py-2.5 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Show my liked songs">
                 <svg class="w-4 h-4 text-pink-300 group-hover:text-pink-200 transition-colors" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 21s-6.716-4.35-9.428-8.06C.86 10.42 1.2 6.9 3.9 5.2c2.3-1.44 5.02-.8 6.6 1.16.5.62.9 1.3 1.5 1.94.6-.64 1-1.32 1.5-1.94 1.58-1.96 4.3-2.6 6.6-1.16 2.7 1.7 3.04 5.22 1.33 7.74C18.72 16.65 12 21 12 21z"/>
                 </svg>
                 <span class="font-medium tracking-wide">My Likes</span>
             </button>
-            <button id="discoverBtn" class="mac-glass px-4 py-2 rounded-full flex items-center gap-2 text-xs md:text-sm text-white/90 hover:bg-white/20 active:scale-95 transition-all shadow-lg group cursor-pointer" title="Search & play a 30-sec preview instantly">
-                <svg class="w-4 h-4 text-amber-200 group-hover:text-amber-100 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13M9 19c0 1.1-1.34 2-3 2s-3-.9-3-2 1.34-2 3-2 3 .9 3 2zm12-2c0 1.1-1.34 2-3 2s-3-.9-3-2 1.34-2 3-2 3 .9 3 2zM9 10l12-2"></path>
-                </svg>
-                <span class="font-medium tracking-wide">Play Preview</span>
-            </button>
-        </div>
-
-        <!-- Discover / Instant Preview Panel -->
-        <div id="discoverPanel" class="hidden absolute top-24 left-6 z-40 mac-glass rounded-2xl w-[300px] max-h-[60vh] overflow-y-auto p-3">
-            <div class="flex items-center justify-between mb-2 px-1">
-                <h3 class="text-xs font-bold text-white/90 tracking-wide uppercase">30-sec Preview Search</h3>
-                <button id="closeDiscoverPanel" class="text-white/60 hover:text-white text-sm">✕</button>
-            </div>
-            <form id="discoverForm" class="flex gap-2 mb-3 px-1">
-                <input id="discoverInput" type="text" placeholder="e.g. Kishore Kumar, Lata..." class="flex-grow bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-xs text-white outline-none placeholder-white/40" />
-                <button type="submit" class="bg-white text-[#b34721] font-semibold text-xs rounded-lg px-3 hover:opacity-90 active:scale-95 transition-all">Go</button>
-            </form>
-            <p class="text-[10px] text-white/50 px-1 mb-2">Official 30-second previews via iTunes — no full track hosting.</p>
-            <div id="discoverStatus" class="text-white/50 text-xs text-center py-3 hidden"></div>
-            <ul id="discoverResults" class="flex flex-col gap-1"></ul>
-        </div>
-
-        <!-- Decade Filter Bar -->
-        <div id="decadeFilterBar" class="absolute top-6 right-6 z-40 flex flex-wrap gap-2 justify-end max-w-[260px] md:max-w-none">
-            <button data-decade="all" class="decade-chip active-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/90 hover:bg-white/20 active:scale-95 transition-all">All</button>
-            <button data-decade="50s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">50's</button>
-            <button data-decade="60s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">60's</button>
-            <button data-decade="70s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">70's</button>
-            <button data-decade="80s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">80's</button>
-            <button data-decade="90s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">90's</button>
-            <button data-decade="20s" class="decade-chip mac-glass px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold text-white/70 hover:bg-white/20 active:scale-95 transition-all">2020's</button>
         </div>
 
         <!-- Playlist Panel (toggles open) -->
-        <div id="playlistPanel" class="hidden absolute top-24 right-6 z-40 mac-glass rounded-2xl w-[280px] max-h-[55vh] overflow-y-auto p-3">
+        <div id="playlistPanel" class="hidden absolute top-20 right-6 z-40 mac-glass rounded-2xl w-[280px] max-h-[55vh] overflow-y-auto p-3">
             <div class="flex items-center justify-between mb-2 px-1">
                 <h3 id="playlistPanelTitle" class="text-xs font-bold text-white/90 tracking-wide uppercase">Playlist</h3>
                 <button id="closePlaylistPanel" class="text-white/60 hover:text-white text-sm">✕</button>
@@ -173,27 +216,60 @@
         </div>
 
         <!-- Hero Title & Subtitle Container -->
-        <div class="relative z-10 text-center flex flex-col items-center max-w-4xl mx-auto">
+        <div class="relative z-10 text-center flex flex-col items-center w-full max-w-full sm:max-w-3xl md:max-w-5xl mx-auto pb-12">
             
             <!-- Line 1: बोनफायर -->
-            <h1 class="vintage-font text-6xl sm:text-8xl md:text-[145px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-1 leading-none mb-[-25px] md:mb-[-45px]">
-                बोनफायर
+            <h1 class="vintage-font text-6xl sm:text-8xl md:text-[115px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-1 leading-none mb-[-10px] md:mb-[-20px]">
+                <span class="title-line">बोनफायर</span>
             </h1>
 
             <!-- Line 2: नाइट्स -->
-            <h1 class="vintage-font text-6xl sm:text-8xl md:text-[145px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-2 leading-none mb-3 md:mb-5">
-                नाइट्स
+            <h1 class="vintage-font text-6xl sm:text-8xl md:text-[115px] tracking-tight text-[#FDF6E2] retro-shadow animate-title-2 leading-none mb-3 md:mb-5">
+                <span class="title-line">नाइट्स</span>
             </h1>
 
-            <!-- Subtitle: — 50’s TO 20’s — -->
-            <div class="subtitle-font text-sm sm:text-base md:text-xl tracking-[0.2em] text-[#EAD8B1] opacity-95 animate-subtitle font-bold uppercase drop-shadow-lg">
-                — 50’s TO 20’s —
+            <!-- Stylized Subtitle Banner: 50'S TO 20'S (Always Visible) -->
+            <div id="normalSubtitle" class="subtitle-font text-sm sm:text-base md:text-lg tracking-[0.2em] text-[#FDF6E2] opacity-95 animate-subtitle font-bold uppercase drop-shadow-md mb-6 banner-dashes">
+                50'S TO 20'S
             </div>
 
         </div>
 
-        <!-- Music Player Container (Positioned absolutely, centered) -->
-        <div class="absolute bottom-12 left-1/2 -translate-x-1/2 z-30 opacity-0 animate-player w-[95%] sm:w-[520px] md:w-[580px]">
+        <!-- BOTTOM RIGHT: CONTINUE LISTENING & RECENTLY PLAYED CONTAINER -->
+        <div id="historySection" class="fixed bottom-6 right-6 z-30 flex flex-col gap-3 w-80 max-w-[calc(100vw-3rem)] hidden text-left">
+            
+            <!-- CONTINUE LISTENING CARD -->
+            <div id="continueListeningCard" class="mac-glass rounded-2xl p-4 flex flex-col gap-3 shadow-xl border border-white/20">
+                <div class="text-[11px] font-bold text-white/80 tracking-widest uppercase">Continue Listening</div>
+                <div class="flex items-center gap-3">
+                    <img id="continueArtwork" src="models/main.png" alt="Artwork" class="w-12 h-12 rounded-xl object-cover shadow-md flex-shrink-0 border border-white/20" />
+                    <div class="min-w-0 flex-1">
+                        <h3 id="continueTitle" class="text-xs sm:text-sm font-semibold text-white truncate">Song Title</h3>
+                        <p id="continueArtist" class="text-[11px] text-white/70 truncate">Artist Name</p>
+                    </div>
+                </div>
+                <button id="continueBtn" class="w-full bg-white text-[#b34721] font-semibold text-xs py-2 rounded-xl hover:opacity-95 active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                    <span>▶</span>
+                    <span id="continueBtnText">Continue • 00:00 / 00:00</span>
+                </button>
+                <p id="continueNotice" class="text-[10px] text-amber-300 italic hidden text-center">Local file needs to be selected again.</p>
+            </div>
+
+            <!-- RECENTLY PLAYED SECTION WITH CLEAR HISTORY BUTTON -->
+            <div id="recentlyPlayedContainer" class="mac-glass rounded-2xl p-4 flex flex-col gap-2.5 shadow-xl border border-white/20">
+                <div class="flex items-center justify-between">
+                    <div class="text-[11px] font-bold text-white/80 tracking-widest uppercase">Recently Played</div>
+                    <button id="clearHistoryBtn" class="text-[10px] font-semibold text-white/70 hover:text-white px-2 py-0.5 rounded-md bg-white/10 hover:bg-white/20 active:scale-95 transition-all cursor-pointer">Clear History</button>
+                </div>
+                <div id="recentlyPlayedList" class="flex flex-col gap-1.5 max-h-40 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Music Player Container -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 opacity-0 animate-player w-[95%] sm:w-[520px] md:w-[580px]">
             
             <!-- Hidden Audio Element -->
             <audio id="audioElement"></audio>
@@ -201,7 +277,7 @@
             <!-- Mac-style Glass Pill -->
             <div class="mac-glass rounded-3xl py-3 px-5 flex items-center justify-between gap-4 text-neutral-100 relative overflow-hidden">
                 
-                <!-- Background color tint (subtle warmth over glass) -->
+                <!-- Background color tint -->
                 <div class="absolute inset-0 bg-[#b34721] mix-blend-multiply opacity-10 pointer-events-none"></div>
                 <div class="absolute inset-0 paper-grain opacity-30 pointer-events-none"></div>
 
@@ -231,7 +307,7 @@
                     <div class="flex items-center gap-2 w-full">
                         <span id="currentTime" class="text-[11px] font-mono text-white/60 w-10 text-right">00:00</span>
                         <!-- Progress Bar Track -->
-                        <div class="flex-grow bg-white/20 h-1.5 rounded-full overflow-hidden cursor-pointer group relative" id="progressBarContainer">
+                        <div class="flex-grow bg-white/20 h-1.5 rounded-full overflow-hidden group relative cursor-pointer" id="progressBarContainer">
                             <!-- Bar Buffer/Progress -->
                             <div id="progressBar" class="bg-white h-full w-0 rounded-full relative transition-all duration-150 ease-linear shadow-md">
                                 <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"></div>
@@ -267,6 +343,18 @@
                         <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                     </button>
 
+                    <!-- Shuffle / Play Random Button (dice icon) -->
+                    <button id="shuffleBtn" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/10 text-white/70 transition-all active:scale-95 disabled:opacity-40" title="Shuffle — play random songs">
+                        <svg id="shuffleIcon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect x="3.5" y="3.5" width="17" height="17" rx="4" stroke-linejoin="round"></rect>
+                            <circle cx="8" cy="8" r="1.4" fill="currentColor" stroke="none"></circle>
+                            <circle cx="16" cy="8" r="1.4" fill="currentColor" stroke="none"></circle>
+                            <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"></circle>
+                            <circle cx="8" cy="16" r="1.4" fill="currentColor" stroke="none"></circle>
+                            <circle cx="16" cy="16" r="1.4" fill="currentColor" stroke="none"></circle>
+                        </svg>
+                    </button>
+
                 </div>
 
             </div>
@@ -274,7 +362,7 @@
 
     </div>
 
-    <!-- JavaScript for Player Functionality -->
+    <!-- JavaScript for Player Functionality, Autocomplete, Persistence & Continue Listening -->
     <script>
         const audioElement = document.getElementById('audioElement');
         audioElement.preload = 'auto';
@@ -283,6 +371,7 @@
         const pauseIcon = document.getElementById('pauseIcon');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
         const likeBtn = document.getElementById('likeBtn');
         const likeIcon = document.getElementById('likeIcon');
         const songTitleEl = document.getElementById('songTitle');
@@ -296,8 +385,6 @@
         const audioFileInput = document.getElementById('audioFileInput');
         const searchSongBtn = document.getElementById('searchSongBtn');
         const myLikesBtn = document.getElementById('myLikesBtn');
-        const decadeFilterBar = document.getElementById('decadeFilterBar');
-        const decadeChips = document.querySelectorAll('.decade-chip');
         const playlistPanel = document.getElementById('playlistPanel');
         const playlistPanelTitle = document.getElementById('playlistPanelTitle');
         const playlistList = document.getElementById('playlistList');
@@ -307,26 +394,318 @@
         const tagDecadeSelect = document.getElementById('tagDecadeSelect');
         const tagConfirmBtn = document.getElementById('tagConfirmBtn');
         const tagCancelBtn = document.getElementById('tagCancelBtn');
-        const discoverBtn = document.getElementById('discoverBtn');
-        const discoverPanel = document.getElementById('discoverPanel');
-        const closeDiscoverPanel = document.getElementById('closeDiscoverPanel');
-        const discoverForm = document.getElementById('discoverForm');
-        const discoverInput = document.getElementById('discoverInput');
-        const discoverStatus = document.getElementById('discoverStatus');
-        const discoverResults = document.getElementById('discoverResults');
+        const playForm = document.getElementById('playForm');
+        const playInput = document.getElementById('playInput');
+        const playStatus = document.getElementById('playStatus');
+        const suggestionsBox = document.getElementById('suggestionsBox');
+        const suggestionsList = document.getElementById('suggestionsList');
+        const closeSuggestionsBtn = document.getElementById('closeSuggestionsBtn');
+
+        // History UI elements
+        const normalSubtitle = document.getElementById('normalSubtitle');
+        const historySection = document.getElementById('historySection');
+        const continueListeningCard = document.getElementById('continueListeningCard');
+        const continueArtwork = document.getElementById('continueArtwork');
+        const continueTitle = document.getElementById('continueTitle');
+        const continueArtist = document.getElementById('continueArtist');
+        const continueBtn = document.getElementById('continueBtn');
+        const continueBtnText = document.getElementById('continueBtnText');
+        const continueNotice = document.getElementById('continueNotice');
+        const recentlyPlayedList = document.getElementById('recentlyPlayedList');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
         const DECADE_LABELS = { '50s': "50's", '60s': "60's", '70s': "70's", '80s': "80's", '90s': "90's", '20s': "2020's" };
 
-        // Full library of added songs: { id, name, artist, title, decade, file (File obj, session-only), liked }
         let library = [];
-        let filteredView = []; // indices into `library` currently playable given active filter
-        let currentLibIndex = null; // index into library of currently loaded song
+        let currentLibIndex = null;
         let isPlaying = false;
-        let activeDecadeFilter = 'all';
         let pendingFiles = [];
+        let previewQueue = [];
+        let previewQueueIndex = -1;
+        let debounceTimer = null;
+        let activeSuggestions = [];
+        let selectedSuggestionIndex = -1;
+        let isShuffleActive = false;
+        let shuffleLoading = false;
 
-        const LIKES_KEY = 'bonfireRadioLikedSongIds';         // local-file songs: just ids (need re-add to replay)
-        const LIKED_PREVIEWS_KEY = 'bonfireRadioLikedPreviews'; // preview songs: full metadata, replayable forever
+        // Local Storage Keys
+        const STORAGE_LAST_PLAYED = 'bonfireRadioLastPlayed';
+        const STORAGE_RECENTLY_PLAYED = 'bonfireRadioRecentlyPlayed';
+        const LIKES_KEY = 'bonfireRadioLikedSongIds';
+        const LIKED_PREVIEWS_KEY = 'bonfireRadioLikedPreviews';
+
+        // Clear History Event Listener
+        clearHistoryBtn.addEventListener('click', () => {
+            localStorage.removeItem(STORAGE_LAST_PLAYED);
+            localStorage.removeItem(STORAGE_RECENTLY_PLAYED);
+            renderHistoryUI();
+        });
+
+        // Smart preset suggestions for common searches
+        const SMART_PRESETS = [
+            { query: "old", label: "🎵 Old Hindi Songs" },
+            { query: "old", label: "🎵 Old Bollywood" },
+            { query: "70s", label: "🎵 70s Retro Songs" },
+            { query: "80s", label: "🎵 80s Classic Songs" },
+            { query: "vintage", label: "🎵 Vintage Indian Music" },
+            { query: "kishore", label: "🎵 Kishore Kumar" },
+            { query: "kishore", label: "🎵 Kishore Kumar Classics" },
+            { query: "kishore 70s", label: "🎵 Kishore Kumar 70s" },
+            { query: "rafi", label: "🎵 Mohammed Rafi Classics" },
+            { query: "lata", label: "🎵 Lata Mangeshkar Melodies" }
+        ];
+
+        function guessDecade(releaseDate) {
+            if (!releaseDate) return '20s';
+            const year = parseInt(releaseDate.slice(0, 4), 10);
+            if (year < 1960) return '50s';
+            if (year < 1970) return '60s';
+            if (year < 1980) return '70s';
+            if (year < 1990) return '80s';
+            if (year < 2000) return '90s';
+            return '20s';
+        }
+
+        // iTunes Search API: public, key-free, CORS-enabled, and returns real 30s
+        // preview mp3 URLs — this is the only dependency the search feed needs.
+        const ITUNES_ENDPOINT = 'https://itunes.apple.com/search';
+
+        function fetchWithTimeout(url, ms = 8000) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), ms);
+            return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+        }
+
+        function mapItunesResults(data) {
+            const results = (data && data.results) || [];
+            return results
+                .filter(t => t.previewUrl && t.trackName)
+                .map(t => ({
+                    id: 'itunes-' + t.trackId,
+                    title: t.trackName,
+                    artist: t.artistName,
+                    decade: guessDecade(t.releaseDate),
+                    artwork: t.artworkUrl100 ? t.artworkUrl100.replace('100x100', '400x400') : null,
+                    previewUrl: t.previewUrl,
+                    source: 'itunes'
+                }));
+        }
+
+        async function itunesSearch(term, limit) {
+            const url = `${ITUNES_ENDPOINT}?term=${encodeURIComponent(term)}&media=music&country=IN&limit=${limit}`;
+            const res = await fetchWithTimeout(url);
+            if (!res.ok) throw new Error('iTunes search failed: ' + res.status);
+            const data = await res.json();
+            return mapItunesResults(data);
+        }
+
+        async function searchSongs(query) {
+            // First pass: bias toward Hindi/Bollywood results, matching the site's theme.
+            try {
+                const biased = await itunesSearch(query + ' hindi', 12);
+                if (biased.length > 0) return biased;
+            } catch (err) {
+                // fall through to an unbiased retry below
+            }
+
+            // Second pass: plain query, in case the "hindi" bias filtered out a real match
+            // (e.g. the person typed an exact English movie/song title).
+            try {
+                return await itunesSearch(query, 12);
+            } catch (err) {
+                return [];
+            }
+        }
+
+        // Seed terms used to pull a fresh, varied batch of real online tracks for Shuffle mode —
+        // spans singers and decades so "random" doesn't just mean one artist on repeat.
+        const SHUFFLE_SEEDS = [
+            'kishore kumar', 'lata mangeshkar', 'mohammed rafi', 'asha bhosle', 'r.d. burman',
+            'arijit singh', 'sonu nigam', 'shreya ghoshal', 'kumar sanu', 'alka yagnik',
+            '50s bollywood', '60s bollywood', '70s bollywood', '80s bollywood', '90s bollywood',
+            '2000s bollywood', 'bollywood love songs', 'bollywood party songs', 'old hindi classics'
+        ];
+
+        function shuffleArray(arr) {
+            const a = arr.slice();
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        async function buildShuffleQueue() {
+            // Try a couple of random seeds in case one comes back empty, so shuffle
+            // reliably finds real, playable online tracks.
+            const triedSeeds = shuffleArray(SHUFFLE_SEEDS).slice(0, 3);
+            for (const seed of triedSeeds) {
+                try {
+                    const tracks = await itunesSearch(seed, 25);
+                    if (tracks.length > 0) return shuffleArray(tracks);
+                } catch (err) {
+                    // try next seed
+                }
+            }
+            return [];
+        }
+
+        playInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim().toLowerCase();
+            clearTimeout(debounceTimer);
+            selectedSuggestionIndex = -1;
+
+            if (val.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            const matchedPresets = SMART_PRESETS.filter(p => p.query.includes(val) || val.includes(p.query) || p.label.toLowerCase().includes(val));
+            
+            debounceTimer = setTimeout(async () => {
+                let apiTracks = [];
+                try {
+                    apiTracks = await searchSongs(val);
+                } catch (err) {
+                    apiTracks = [];
+                }
+
+                const presetItems = matchedPresets.map(p => ({
+                    type: 'preset',
+                    title: p.label,
+                    query: p.query
+                }));
+
+                const trackItems = apiTracks.map(t => ({
+                    type: 'track',
+                    title: t.title,
+                    artist: t.artist,
+                    artwork: t.artwork,
+                    trackObj: t
+                }));
+
+                activeSuggestions = [...presetItems, ...trackItems];
+                renderSuggestionsDropdown();
+            }, 200);
+        });
+
+        function hideSuggestions() {
+            suggestionsBox.classList.add('opacity-0', 'scale-95');
+            setTimeout(() => {
+                if (suggestionsBox.classList.contains('opacity-0')) {
+                    suggestionsBox.classList.add('hidden');
+                    suggestionsList.innerHTML = '';
+                    activeSuggestions = [];
+                }
+            }, 200);
+        }
+
+        function showSuggestions() {
+            suggestionsBox.classList.remove('hidden');
+            void suggestionsBox.offsetWidth;
+            suggestionsBox.classList.remove('opacity-0', 'scale-95');
+        }
+
+        closeSuggestionsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hideSuggestions();
+        });
+
+        function renderSuggestionsDropdown() {
+            suggestionsList.innerHTML = '';
+            if (activeSuggestions.length === 0) {
+                hideSuggestions();
+                return;
+            }
+
+            activeSuggestions.forEach((item, index) => {
+                const div = document.createElement('div');
+                const isSelected = index === selectedSuggestionIndex;
+                div.className = `flex items-center gap-3 px-3.5 py-2.5 cursor-pointer transition-all border-b border-white/5 last:border-b-0 ${isSelected ? 'bg-white/25 scale-[1.01]' : 'hover:bg-white/15'}`;
+
+                if (item.type === 'preset') {
+                    div.innerHTML = `
+                        <div class="w-8 h-8 rounded-md bg-white/10 flex items-center justify-center text-xs flex-shrink-0">✨</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-semibold text-white truncate">${escapeHtml(item.title)}</p>
+                        </div>
+                    `;
+                    div.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        playInput.value = item.query;
+                        hideSuggestions();
+                        performSearch(item.query);
+                    });
+                } else {
+                    div.innerHTML = `
+                        ${item.artwork ? `<img src="${item.artwork}" class="w-8 h-8 rounded-md object-cover flex-shrink-0">` : `<div class="w-8 h-8 rounded-md bg-white/20 flex items-center justify-center text-xs flex-shrink-0">🎵</div>`}
+                        <div class="min-w-0 flex-1">
+                            <p class="text-xs font-semibold text-white truncate">${escapeHtml(item.title)}</p>
+                            <p class="text-[10px] text-white/60 truncate">${escapeHtml(item.artist)}</p>
+                        </div>
+                    `;
+                    div.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        playInput.value = item.title + ' - ' + item.artist;
+                        hideSuggestions();
+                        isShuffleActive = false;
+                        updateShuffleUI();
+                        previewQueue = [item.trackObj];
+                        playPreviewSong(item.trackObj, 0);
+                    });
+                }
+
+                suggestionsList.appendChild(div);
+            });
+
+            showSuggestions();
+        }
+
+        playInput.addEventListener('keydown', (e) => {
+            const isHidden = suggestionsBox.classList.contains('hidden');
+            if (isHidden || activeSuggestions.length === 0) {
+                if (e.key === 'Escape') hideSuggestions();
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex + 1) % activeSuggestions.length;
+                renderSuggestionsDropdown();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                selectedSuggestionIndex = (selectedSuggestionIndex - 1 + activeSuggestions.length) % activeSuggestions.length;
+                renderSuggestionsDropdown();
+            } else if (e.key === 'Enter') {
+                if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < activeSuggestions.length) {
+                    e.preventDefault();
+                    const chosen = activeSuggestions[selectedSuggestionIndex];
+                    if (chosen.type === 'preset') {
+                        playInput.value = chosen.query;
+                        hideSuggestions();
+                        performSearch(chosen.query);
+                    } else {
+                        playInput.value = chosen.title + ' - ' + chosen.artist;
+                        hideSuggestions();
+                        isShuffleActive = false;
+                        updateShuffleUI();
+                        previewQueue = [chosen.trackObj];
+                        playPreviewSong(chosen.trackObj, 0);
+                    }
+                } else {
+                    hideSuggestions();
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                hideSuggestions();
+            }
+        });
+
+        playInput.addEventListener('focus', () => {
+            if (playInput.value.trim().length > 0 && activeSuggestions.length > 0) {
+                showSuggestions();
+            }
+        });
 
         function loadLikedIds() {
             try { return new Set(JSON.parse(localStorage.getItem(LIKES_KEY)) || []); }
@@ -344,11 +723,145 @@
         function saveLikedPreviews(arr) {
             localStorage.setItem(LIKED_PREVIEWS_KEY, JSON.stringify(arr));
         }
-        let likedPreviews = loadLikedPreviews(); // array of preview song objects
+        let likedPreviews = loadLikedPreviews();
 
         function songId(name, decade) {
             return decade + '::' + name;
         }
+
+        function saveLastPlayedState() {
+            if (!currentSong) return;
+            const state = {
+                id: currentSong.id,
+                title: currentSong.title,
+                artist: currentSong.artist,
+                decade: currentSong.decade,
+                artwork: currentSong.artwork || (currentLibIndex !== null ? 'models/main.png' : null),
+                previewUrl: currentSong.previewUrl || null,
+                isLocal: currentLibIndex !== null,
+                currentTime: audioElement.currentTime || 0,
+                duration: audioElement.duration || 0,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(STORAGE_LAST_PLAYED, JSON.stringify(state));
+            addToRecentlyPlayed(state);
+        }
+
+        function addToRecentlyPlayed(songState) {
+            try {
+                let recent = JSON.parse(localStorage.getItem(STORAGE_RECENTLY_PLAYED)) || [];
+                recent = recent.filter(s => s.id !== songState.id);
+                recent.unshift(songState);
+                if (recent.length > 5) recent = recent.slice(0, 5);
+                localStorage.setItem(STORAGE_RECENTLY_PLAYED, JSON.stringify(recent));
+                renderHistoryUI();
+            } catch (e) {}
+        }
+
+        function renderHistoryUI() {
+            const lastPlayedStr = localStorage.getItem(STORAGE_LAST_PLAYED);
+            const recentArr = JSON.parse(localStorage.getItem(STORAGE_RECENTLY_PLAYED)) || [];
+
+            // Ensure the banner stays visible at all times
+            if (!lastPlayedStr && recentArr.length === 0) {
+                historySection.classList.add('hidden');
+                return;
+            }
+
+            historySection.classList.remove('hidden');
+
+            if (lastPlayedStr) {
+                try {
+                    const lp = JSON.parse(lastPlayedStr);
+                    continueTitle.textContent = lp.title;
+                    continueArtist.textContent = lp.artist + ' · ' + (DECADE_LABELS[lp.decade] || "2020's");
+                    if (lp.artwork) continueArtwork.src = lp.artwork;
+                    else continueArtwork.src = 'models/main.png';
+
+                    const curFormatted = formatTime(lp.currentTime || 0);
+                    const durFormatted = formatTime(lp.duration || 0);
+                    continueBtnText.textContent = `Continue • ${curFormatted} / ${durFormatted}`;
+
+                    if (lp.isLocal) {
+                        continueNotice.classList.remove('hidden');
+                    } else {
+                        continueNotice.classList.add('hidden');
+                    }
+                } catch (e) {
+                    continueListeningCard.classList.add('hidden');
+                }
+            } else {
+                continueListeningCard.classList.add('hidden');
+            }
+
+            recentlyPlayedList.innerHTML = '';
+            if (recentArr.length === 0) {
+                document.getElementById('recentlyPlayedContainer').classList.add('hidden');
+            } else {
+                document.getElementById('recentlyPlayedContainer').classList.remove('hidden');
+                recentArr.forEach(song => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between gap-2 p-2 rounded-xl hover:bg-white/10 cursor-pointer transition-all';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                            <img src="${song.artwork || 'models/main.png'}" class="w-9 h-9 rounded-lg object-cover flex-shrink-0 border border-white/15">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-semibold text-white truncate">${escapeHtml(song.title)}</p>
+                                <p class="text-[10px] text-white/60 truncate">${escapeHtml(song.artist)} · ${DECADE_LABELS[song.decade] || "2020's"}</p>
+                            </div>
+                        </div>
+                        <span class="text-xs text-white/70 px-2 py-1 rounded-lg bg-white/10 hover:bg-white/20">▶ Play</span>
+                    `;
+                    div.addEventListener('click', () => {
+                        if (song.isLocal) {
+                            alert("Local file needs to be selected again via Add Songs.");
+                            audioFileInput.click();
+                            return;
+                        }
+                        previewQueue = [{
+                            id: song.id,
+                            title: song.title,
+                            artist: song.artist,
+                            decade: song.decade,
+                            artwork: song.artwork,
+                            previewUrl: song.previewUrl,
+                            source: 'stream',
+                            liked: likedPreviews.some(s => s.id === song.id)
+                        }];
+                        playPreviewSong(previewQueue[0], 0);
+                    });
+                    recentlyPlayedList.appendChild(div);
+                });
+            }
+        }
+
+        continueBtn.addEventListener('click', () => {
+            const lastPlayedStr = localStorage.getItem(STORAGE_LAST_PLAYED);
+            if (!lastPlayedStr) return;
+            try {
+                const lp = JSON.parse(lastPlayedStr);
+                if (lp.isLocal) {
+                    alert("Local file needs to be selected again via Add Songs.");
+                    audioFileInput.click();
+                    return;
+                }
+                const track = {
+                    id: lp.id,
+                    title: lp.title,
+                    artist: lp.artist,
+                    decade: lp.decade,
+                    artwork: lp.artwork,
+                    previewUrl: lp.previewUrl,
+                    source: 'stream',
+                    liked: likedPreviews.some(s => s.id === lp.id)
+                };
+                previewQueue = [track];
+                playPreviewSong(track, 0);
+                if (lp.currentTime) {
+                    audioElement.currentTime = lp.currentTime;
+                }
+            } catch (e) {}
+        });
 
         function setInitialState() {
             songTitleEl.textContent = "Waiting for input...";
@@ -360,10 +873,10 @@
             prevBtn.disabled = true;
             nextBtn.disabled = true;
             likeBtn.disabled = true;
+            renderHistoryUI();
         }
         setInitialState();
 
-        // ---- Adding songs ----
         uploadTrigger.addEventListener('click', () => audioFileInput.click());
         searchSongBtn.addEventListener('click', () => audioFileInput.click());
 
@@ -400,45 +913,13 @@
             });
             pendingFiles = [];
             tagModalOverlay.classList.add('hidden');
-            applyFilter(activeDecadeFilter);
-            // if nothing was playing yet, start the first newly added track
             if (currentLibIndex === null && library.length > startIndex) {
                 playFromLibrary(startIndex);
             }
             renderPlaylistPanel();
         });
 
-        // ---- Decade filter chips ----
-        decadeChips.forEach(chip => {
-            chip.addEventListener('click', () => {
-                activeDecadeFilter = chip.dataset.decade;
-                decadeChips.forEach(c => {
-                    c.classList.toggle('active-chip', c === chip);
-                    c.classList.toggle('text-white/90', c === chip);
-                    c.classList.toggle('text-white/70', c !== chip);
-                    c.style.background = c === chip ? 'rgba(255,255,255,0.28)' : '';
-                });
-                applyFilter(activeDecadeFilter);
-                renderPlaylistPanel();
-            });
-        });
-
-        function applyFilter(decade) {
-            if (decade === 'all') {
-                filteredView = library.map((_, i) => i);
-            } else {
-                filteredView = library.reduce((acc, song, i) => {
-                    if (song.decade === decade) acc.push(i);
-                    return acc;
-                }, []);
-            }
-        }
-        applyFilter('all');
-
-        // ---- Playlist panel ----
-        myLikesBtn.addEventListener('click', () => {
-            showLikesPanel();
-        });
+        myLikesBtn.addEventListener('click', () => showLikesPanel());
         closePlaylistPanel.addEventListener('click', () => playlistPanel.classList.add('hidden'));
 
         function showLikesPanel() {
@@ -471,7 +952,7 @@
                     const isCurrent = currentSong && currentSong.id === song.id;
                     const li = document.createElement('li');
                     li.className = 'flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition-all ' + (isCurrent ? 'bg-white/15' : '');
-                    const badge = entry.kind === 'preview' ? ' · 30s' : '';
+                    const badge = entry.kind === 'preview' ? ' · Stream' : '';
                     li.innerHTML = `
                         <div class="min-w-0 flex-1">
                             <p class="text-xs font-semibold text-white truncate">${escapeHtml(song.title)}</p>
@@ -494,16 +975,13 @@
                 return;
             }
 
-            // browse mode (decade filter of local library)
-            const indices = filteredView;
-            if (indices.length === 0) {
+            if (library.length === 0) {
                 playlistEmptyMsg.classList.remove('hidden');
-                playlistEmptyMsg.textContent = "No songs in this decade yet. Use Add Songs.";
+                playlistEmptyMsg.textContent = "No songs yet. Use Add Songs.";
                 return;
             }
             playlistEmptyMsg.classList.add('hidden');
-            indices.forEach(i => {
-                const song = library[i];
+            library.forEach((song, i) => {
                 const li = document.createElement('li');
                 li.className = 'flex items-center justify-between gap-2 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition-all ' + (i === currentLibIndex ? 'bg-white/15' : '');
                 li.innerHTML = `
@@ -525,109 +1003,33 @@
             });
         }
 
-        // ---- Discover: search iTunes for 30-sec previews ----
-        discoverBtn.addEventListener('click', () => {
-            discoverPanel.classList.toggle('hidden');
-        });
-        closeDiscoverPanel.addEventListener('click', () => discoverPanel.classList.add('hidden'));
-
-        function guessDecade(releaseDate) {
-            if (!releaseDate) return '20s';
-            const year = parseInt(releaseDate.slice(0, 4), 10);
-            if (year < 1960) return '50s';
-            if (year < 1970) return '60s';
-            if (year < 1980) return '70s';
-            if (year < 1990) return '80s';
-            if (year < 2000) return '90s';
-            return '20s';
-        }
-
-        // Live "as-you-type" search — debounced, with a request token so a slow
-        // stale response can never overwrite a newer one.
-        let discoverSearchToken = 0;
-        let discoverDebounceTimer = null;
-
-        async function runDiscoverSearch(rawQuery) {
-            const q = rawQuery.trim();
-            const myToken = ++discoverSearchToken;
-
-            if (!q) {
-                discoverResults.innerHTML = '';
-                discoverStatus.classList.add('hidden');
-                return;
-            }
-            if (q.length < 2) {
-                // too short to search yet — just wait for more characters
-                discoverStatus.classList.remove('hidden');
-                discoverStatus.textContent = 'Keep typing…';
-                discoverResults.innerHTML = '';
-                return;
-            }
-
-            discoverStatus.classList.remove('hidden');
-            discoverStatus.textContent = 'Searching…';
-
-            try {
-                const url = `https://itunes.apple.com/search?term=${encodeURIComponent(q + ' hindi')}&media=music&country=IN&limit=15`;
-                const res = await fetch(url);
-                const data = await res.json();
-
-                // A newer keystroke already started a fresher search — drop this result.
-                if (myToken !== discoverSearchToken) return;
-
-                const tracks = (data.results || []).filter(t => t.previewUrl);
-                discoverResults.innerHTML = '';
-
-                if (tracks.length === 0) {
-                    discoverStatus.classList.remove('hidden');
-                    discoverStatus.textContent = 'No previews found. Try another spelling / singer / movie name.';
-                    return;
-                }
-                discoverStatus.classList.add('hidden');
-                tracks.forEach(t => {
-                    const decade = guessDecade(t.releaseDate);
-                    const song = {
-                        id: 'itunes-' + t.trackId,
-                        title: t.trackName,
-                        artist: t.artistName,
-                        decade,
-                        artwork: t.artworkUrl100,
-                        previewUrl: t.previewUrl,
-                        liked: likedPreviews.some(s => s.id === 'itunes-' + t.trackId)
-                    };
-                    const li = document.createElement('li');
-                    li.className = 'flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition-all';
-                    li.innerHTML = `
-                        <img src="${song.artwork}" class="w-9 h-9 rounded-md flex-shrink-0 object-cover" />
-                        <div class="min-w-0 flex-1">
-                            <p class="text-xs font-semibold text-white truncate">${escapeHtml(song.title)}</p>
-                            <p class="text-[10px] text-white/60 truncate">${escapeHtml(song.artist)} · ${DECADE_LABELS[decade]}</p>
-                        </div>
-                        <span class="text-white/50 text-[10px] flex-shrink-0">▶ 30s</span>
-                    `;
-                    li.addEventListener('click', () => playPreviewSong(song));
-                    discoverResults.appendChild(li);
-                });
-            } catch (err) {
-                if (myToken !== discoverSearchToken) return;
-                discoverStatus.classList.remove('hidden');
-                discoverStatus.textContent = 'Search failed — check your connection and try again.';
-            }
-        }
-
-        // Type "kish" → results for Kishore Kumar start appearing automatically,
-        // no need to press Go. Debounced so it doesn't fire a request per keystroke.
-        discoverInput.addEventListener('input', () => {
-            clearTimeout(discoverDebounceTimer);
-            const value = discoverInput.value;
-            discoverDebounceTimer = setTimeout(() => runDiscoverSearch(value), 350);
-        });
-
-        discoverForm.addEventListener('submit', (e) => {
+        playForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            clearTimeout(discoverDebounceTimer);
-            runDiscoverSearch(discoverInput.value);
+            hideSuggestions();
+            const q = playInput.value.trim();
+            if (!q) return;
+            await performSearch(q);
         });
+
+        async function performSearch(q) {
+            isShuffleActive = false;
+            updateShuffleUI();
+            playStatus.classList.remove('hidden');
+            playStatus.textContent = 'Finding "' + q + '"…';
+            let tracks = [];
+            try {
+                tracks = await searchSongs(q);
+            } catch (err) {
+                tracks = [];
+            }
+            if (tracks.length === 0) {
+                playStatus.textContent = 'No match found — try another spelling / singer / movie name.';
+                return;
+            }
+            previewQueue = tracks.map(t => ({ ...t, liked: likedPreviews.some(s => s.id === t.id) }));
+            playStatus.classList.add('hidden');
+            playPreviewSong(previewQueue[0], 0);
+        }
 
         function escapeHtml(str) {
             const div = document.createElement('div');
@@ -635,13 +1037,13 @@
             return div.innerHTML;
         }
 
-        // ---- Core playback ----
-        // currentSong holds whichever song object (local-file OR preview) is loaded right now
         let currentSong = null;
 
         function playFromLibrary(libIndex) {
             const song = library[libIndex];
             if (!song || !song.file) return;
+            isShuffleActive = false;
+            updateShuffleUI();
             currentLibIndex = libIndex;
             currentSong = song;
             loadSong(song, URL.createObjectURL(song.file));
@@ -652,28 +1054,32 @@
             likeBtn.disabled = false;
             updateLikeIcon();
             renderPlaylistPanel();
+            saveLastPlayedState();
         }
 
-        function playPreviewSong(song) {
-            // song: { id, title, artist, decade, artwork, previewUrl }
+        function playPreviewSong(song, queueIdx) {
             currentLibIndex = null;
             currentSong = song;
+            if (typeof queueIdx === 'number') previewQueueIndex = queueIdx;
             loadSong(song, song.previewUrl, true);
             playSong();
             playPauseBtn.disabled = false;
-            prevBtn.disabled = true;
-            nextBtn.disabled = true;
+            prevBtn.disabled = previewQueue.length <= 1;
+            nextBtn.disabled = previewQueue.length <= 1;
             likeBtn.disabled = false;
             updateLikeIcon();
             renderPlaylistPanel();
+            saveLastPlayedState();
         }
 
         function loadSong(song, src, isPreview) {
             songTitleEl.textContent = song.title;
-            artistNameEl.textContent = song.artist + ' · ' + DECADE_LABELS[song.decade] + (isPreview ? ' · 30s preview' : '');
+            artistNameEl.textContent = song.artist + ' · ' + DECADE_LABELS[song.decade] + (isPreview ? ' · Stream' : '');
             audioElement.src = src;
             if (isPreview && song.artwork) {
                 albumArt.src = song.artwork;
+            } else if (!isPreview) {
+                albumArt.src = 'models/main.png';
             }
             albumArt.classList.add('paused-art');
         }
@@ -684,8 +1090,8 @@
                 playIcon.classList.add('hidden');
                 pauseIcon.classList.remove('hidden');
                 albumArt.classList.remove('paused-art');
+                saveLastPlayedState();
             }).catch(err => {
-                console.log("Playback prevented:", err);
                 isPlaying = false;
             });
         }
@@ -696,37 +1102,87 @@
             playIcon.classList.remove('hidden');
             pauseIcon.classList.add('hidden');
             albumArt.classList.add('paused-art');
+            saveLastPlayedState();
         }
 
         playPauseBtn.addEventListener('click', () => {
             if (isPlaying) pauseSong(); else playSong();
         });
 
-        function currentPositionInFilter() {
-            return filteredView.indexOf(currentLibIndex);
+        function randomIndexExcluding(length, excludeIdx) {
+            if (length <= 1) return 0;
+            let idx = Math.floor(Math.random() * length);
+            if (idx === excludeIdx) idx = (idx + 1) % length;
+            return idx;
         }
 
         nextBtn.addEventListener('click', () => {
-            const pool = filteredView.length ? filteredView : library.map((_, i) => i);
-            if (pool.length <= 1) { if (pool.length === 1) playFromLibrary(pool[0]); return; }
-            let pos = pool.indexOf(currentLibIndex);
-            pos = (pos + 1 + pool.length) % pool.length;
-            playFromLibrary(pool[pos]);
+            if (currentSong && currentSong.previewUrl && previewQueue.length) {
+                if (previewQueue.length <= 1) return;
+                const pos = isShuffleActive
+                    ? randomIndexExcluding(previewQueue.length, previewQueueIndex)
+                    : (previewQueueIndex + 1) % previewQueue.length;
+                playPreviewSong(previewQueue[pos], pos);
+                return;
+            }
+            if (library.length <= 1) { if (library.length === 1) playFromLibrary(0); return; }
+            let pos = currentLibIndex;
+            pos = (pos + 1 + library.length) % library.length;
+            playFromLibrary(pos);
         });
 
         prevBtn.addEventListener('click', () => {
-            const pool = filteredView.length ? filteredView : library.map((_, i) => i);
-            if (pool.length <= 1) { if (pool.length === 1) playFromLibrary(pool[0]); return; }
-            let pos = pool.indexOf(currentLibIndex);
-            pos = (pos - 1 + pool.length) % pool.length;
-            playFromLibrary(pool[pos]);
+            if (currentSong && currentSong.previewUrl && previewQueue.length) {
+                if (previewQueue.length <= 1) return;
+                const pos = isShuffleActive
+                    ? randomIndexExcluding(previewQueue.length, previewQueueIndex)
+                    : (previewQueueIndex - 1 + previewQueue.length) % previewQueue.length;
+                playPreviewSong(previewQueue[pos], pos);
+                return;
+            }
+            if (library.length <= 1) { if (library.length === 1) playFromLibrary(0); return; }
+            let pos = currentLibIndex;
+            pos = (pos - 1 + library.length) % library.length;
+            playFromLibrary(pos);
         });
 
-        // ---- Like button ----
+        function updateShuffleUI() {
+            if (isShuffleActive) {
+                shuffleBtn.classList.add('text-white', 'bg-white/15');
+                shuffleBtn.classList.remove('text-white/70');
+            } else {
+                shuffleBtn.classList.remove('text-white', 'bg-white/15');
+                shuffleBtn.classList.add('text-white/70');
+            }
+        }
+
+        shuffleBtn.addEventListener('click', async () => {
+            if (shuffleLoading) return;
+            shuffleLoading = true;
+            shuffleBtn.disabled = true;
+            playStatus.classList.remove('hidden');
+            playStatus.textContent = 'Shuffling songs…';
+
+            const queue = await buildShuffleQueue();
+
+            shuffleLoading = false;
+            shuffleBtn.disabled = false;
+
+            if (queue.length === 0) {
+                playStatus.textContent = 'Could not load random songs — check your connection and try again.';
+                return;
+            }
+
+            isShuffleActive = true;
+            updateShuffleUI();
+            previewQueue = queue.map(t => ({ ...t, liked: likedPreviews.some(s => s.id === t.id) }));
+            playStatus.classList.add('hidden');
+            playPreviewSong(previewQueue[0], 0);
+        });
+
         likeBtn.addEventListener('click', () => {
             if (!currentSong) return;
             if (currentSong.previewUrl) {
-                // preview-type song: toggle in likedPreviews (full metadata, persists)
                 const idx = likedPreviews.findIndex(s => s.id === currentSong.id);
                 if (idx >= 0) {
                     likedPreviews.splice(idx, 1);
@@ -761,7 +1217,6 @@
             }
         }
 
-        // ---- Progress bar / full playback ----
         audioElement.addEventListener('timeupdate', () => {
             if (audioElement.duration) {
                 const current = audioElement.currentTime;
@@ -770,6 +1225,7 @@
                 progressBar.style.width = `${percent}%`;
                 currentTimeEl.textContent = formatTime(current);
                 durationEl.textContent = formatTime(duration);
+                saveLastPlayedState();
             }
         });
 
@@ -777,12 +1233,15 @@
             durationEl.textContent = formatTime(audioElement.duration || 0);
         });
 
-        // Ensures the song always plays to its natural end before advancing
         audioElement.addEventListener('ended', () => {
-            if (currentLibIndex !== null) {
+            if (currentSong && currentSong.previewUrl && previewQueue.length > 0) {
+                const pos = isShuffleActive
+                    ? randomIndexExcluding(previewQueue.length, previewQueueIndex)
+                    : (previewQueueIndex + 1) % previewQueue.length;
+                playPreviewSong(previewQueue[pos], pos);
+            } else if (currentLibIndex !== null) {
                 nextBtn.click();
             } else {
-                // preview finished — just reset play/pause UI
                 isPlaying = false;
                 playIcon.classList.remove('hidden');
                 pauseIcon.classList.add('hidden');
@@ -797,6 +1256,7 @@
             const width = rect.width;
             const percentage = Math.min(Math.max(clickX / width, 0), 1);
             audioElement.currentTime = percentage * audioElement.duration;
+            saveLastPlayedState();
         });
 
         function formatTime(seconds) {
@@ -806,8 +1266,5 @@
             return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
     </script>
-    <style>
-        .active-chip { background: rgba(255,255,255,0.28) !important; }
-    </style>
 </body>
 </html>
