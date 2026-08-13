@@ -924,6 +924,30 @@
             if (isPlaying) pauseSong(); else playSong();
         });
 
+        document.addEventListener('keydown', (e) => {
+            const tag = (e.target && e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || (e.target && e.target.isContentEditable)) return;
+
+            switch (e.code) {
+                case 'Enter':
+                    e.preventDefault();
+                    playRandomDiceSong();
+                    break;
+                case 'Space':
+                    e.preventDefault();
+                    if (isPlaying) pauseSong(); else playSong();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    prevBtn.click();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextBtn.click();
+                    break;
+            }
+        });
+
         function currentPositionInFilter() {
             return filteredView.indexOf(currentLibIndex);
         }
